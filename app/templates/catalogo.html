@@ -18,7 +18,16 @@
 </div>
 
 <!-- TODO (Bloque 1 - Ejercicio 1.1): Añadir formulario GET con campo de texto 'busqueda' y checkbox 'solo_con_plazas' -->
-
+{# <form action="" method="get" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+        <div style="margin-bottom: 12px;">
+        {{ form.busqueda.label }}<br>
+        {{ form.busqueda(size=30) }}<br>
+        {% for error in form.busqueda.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+    </div>
+</form> #}
 {% for act in lista_actividades %}
 <div class="card-actividad">
     <div>

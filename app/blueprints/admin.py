@@ -19,9 +19,29 @@ admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 @admin_bp.route("/actividad/nueva", methods=["GET", "POST"])
 def crear_actividad():
     form = ActividadForm()
+
+    if form.validate_on_submit():
+        act = Actividad()
+        form.populate_obj(act)
+        
+        if form.archivo_imagen.data:
+            archivo = form.archivo_imagen.data
+            nombre_seguro = secure_filename(archivo.filename)
+            carpeta = current_app.config["UPLOAD_FOLDER"]
+            os.makedirs(carpeta, exist_ok=True)
+            archivo.save(os.path.join(carpeta, nombre_seguro))
+            act.imagen = nombre_seguro
+        
+        db.session.add(act)
+        db.session.commit()
+        flash("Actividad creada correctamente")
+        return redirect(url_for("admin.crear_actividad"))
+
     return render_template(
         "actividad_form.html", form=form, titulo="Nueva Actividad Deportiva"
     )
+    
+
 
 
 @admin_bp.route("/actividad/<int:act_id>/editar", methods=["GET", "POST"])

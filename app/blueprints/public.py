@@ -11,6 +11,7 @@ from flask import (
 from flask_login import login_required
 from app.models import db, Actividad
 
+
 public_bp = Blueprint("public", __name__)
 
 

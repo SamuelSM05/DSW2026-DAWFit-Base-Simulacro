@@ -55,11 +55,28 @@ class ActividadForm(FlaskForm):
         ],
     )
 
-    cuota = FloatField("Cuota Mensual (€)", validators=[DataRequired()])
-    plazas_libres = IntegerField("Plazas Libres", default=10)
-    archivo_imagen = FileField("Cartel de la Actividad (JPG, PNG)")
+    cuota = FloatField(
+        "Cuota Mensual (€)",
+        validators=[
+            DataRequired(message="La cuota es obligatoria"),
+            NumberRange(min=5.0, max=150.0, message="Ingrese una cuota entre 5.0 y 150.0 €"),
+        ],
+    )
+    plazas_libres = IntegerField(
+        "Plazas Libres",
+        default=10,
+        validators=[DataRequired(message="Las plazas son obligatorias"), NumberRange(min=0)],
+    )
+    archivo_imagen = FileField(
+        "Cartel de la Actividad (JPG, PNG)",
+        validators=[FileAllowed(["jpg", "jpeg", "png"])],
+    )
 
     submit = SubmitField("Guardar Actividad")
+
+    def validate_nombre(self, field):
+        if Actividad.query.filter_by(nombre=field.data).first():
+            raise ValidationError("Esa actividad ya está registrada.")
 
 
 class RegistroForm(FlaskForm):
