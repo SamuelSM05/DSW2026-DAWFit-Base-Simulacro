@@ -39,6 +39,7 @@ class LoginForm(FlaskForm):
 
 class ActividadForm(FlaskForm):
     """Formulario para crear y editar actividades deportivas."""
+    # Ejercicio 2.2: validacion de cuota, plazas, imagen y nombre unico.
 
     nombre = StringField(
         "Nombre de la Actividad",
@@ -75,12 +76,18 @@ class ActividadForm(FlaskForm):
     submit = SubmitField("Guardar Actividad")
 
     def validate_nombre(self, field):
-        if Actividad.query.filter_by(nombre=field.data).first():
+        # Permite conservar el nombre al editar la propia actividad.
+        actividad_existente = Actividad.query.filter_by(nombre=field.data).first()
+        actividad_actual = getattr(self, "actividad_actual", None)
+        if actividad_existente and (
+            actividad_actual is None or actividad_existente.id != actividad_actual.id
+        ):
             raise ValidationError("Esa actividad ya está registrada.")
 
 
 class RegistroForm(FlaskForm):
     """Formulario de alta para nuevos socios."""
+    # Ejercicio 4.1: incorpora edad obligatoria y minimo de 16 anos.
 
     username = StringField(
         "Nombre de Usuario",
@@ -104,6 +111,13 @@ class RegistroForm(FlaskForm):
             Length(min=6, message="Mínimo 6 caracteres."),
         ],
     )
+    edad = IntegerField(
+        "Edad",
+        validators=[
+            DataRequired(message="La edad es obligatoria."),
+            NumberRange(min=16, message="Debes tener al menos 16 años."),
+        ],
+    )
     confirm_password = PasswordField(
         "Confirmar Contraseña",
         validators=[
@@ -124,5 +138,24 @@ class RegistroForm(FlaskForm):
 
 class CambiarPasswordForm(FlaskForm):
     """Formulario para cambiar la contraseña desde el perfil del socio."""
+    # Ejercicio 4.2: contraseña actual, nueva contraseña y confirmacion.
 
+    password_actual = PasswordField(
+        "Contraseña actual",
+        validators=[DataRequired(message="Introduce tu contraseña actual.")],
+    )
+    nueva_password = PasswordField(
+        "Nueva contraseña",
+        validators=[
+            DataRequired(message="Introduce la nueva contraseña."),
+            Length(min=6, message="La nueva contraseña debe tener al menos 6 caracteres."),
+        ],
+    )
+    confirmar_password = PasswordField(
+        "Confirmar nueva contraseña",
+        validators=[
+            DataRequired(message="Confirma la nueva contraseña."),
+            EqualTo("nueva_password", message="Las contraseñas no coinciden."),
+        ],
+    )
     submit = SubmitField("Actualizar Contraseña")

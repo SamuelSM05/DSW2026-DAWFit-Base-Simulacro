@@ -5,7 +5,7 @@
 {% block content %}
 <h2>{{ titulo }}</h2>
 
-<!-- Nota: Recuerda verificar los atributos necesarios para subida de ficheros -->
+{# Ejercicio 2.3: formulario de subida con CSRF y multipart. #}
 <form action="" method="post" enctype="multipart/form-data" novalidate>
     {{ form.hidden_tag() }}
 

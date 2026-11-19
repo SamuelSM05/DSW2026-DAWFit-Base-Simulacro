@@ -1,4 +1,5 @@
 from flask import Flask, render_template
+from flask_wtf import CSRFProtect
 from app.config import Config
 from app.models import db, login_manager, Actividad, Usuario
 
@@ -7,6 +8,9 @@ def create_app(config_class=Config):
     """Factoría de aplicaciones de DAW-Fit."""
     app = Flask(__name__)
     app.config.from_object(config_class)
+    # Rúbrica transversal: protección CSRF para los formularios POST.
+    csrf = CSRFProtect()
+    csrf.init_app(app)
 
     db.init_app(app)
     login_manager.init_app(app)
@@ -23,6 +27,11 @@ def create_app(config_class=Config):
     @app.errorhandler(403)
     def acceso_prohibido(e):
         return render_template("403.html"), 403
+
+    @app.errorhandler(404)
+    def recurso_no_encontrado(e):
+        # Ejercicio 1.3: manejador global de la pagina de error 404.
+        return render_template("404.html"), 404
 
     with app.app_context():
         db.create_all()

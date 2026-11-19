@@ -21,7 +21,14 @@
         {% endfor %}
     </div>
 
-    <!-- TODO (Bloque 4 - Ejercicio 4.1): Renderizar aquí el campo 'edad' y sus errores -->
+    <div style="margin-bottom: 10px;">
+        {# Ejercicio 4.1: campo edad del formulario de registro. #}
+        {{ form.edad.label }}<br>
+        {{ form.edad() }}<br>
+        {% for error in form.edad.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+    </div>
 
     <div style="margin-bottom: 10px;">
         {{ form.password.label }}<br>

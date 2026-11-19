@@ -31,10 +31,23 @@ def login():
 
 @auth_bp.route("/registro", methods=["GET", "POST"])
 def registro():
+    # Ejercicio 4.1: registra al socio con edad y contraseña cifrada.
     if current_user.is_authenticated:
         return redirect(url_for("public.mostrar_actividades"))
 
     form = RegistroForm()
+    if form.validate_on_submit():
+        usuario = Usuario(
+            username=form.username.data,
+            email=form.email.data,
+            edad=form.edad.data,
+            rol="socio",
+        )
+        usuario.set_password(form.password.data)
+        db.session.add(usuario)
+        db.session.commit()
+        flash("Registro completado. Ya puedes iniciar sesión.", "exito")
+        return redirect(url_for("auth.login"))
 
     return render_template("registro.html", form=form)
 
@@ -42,7 +55,18 @@ def registro():
 @auth_bp.route("/perfil", methods=["GET", "POST"])
 @login_required
 def perfil():
+    # Ejercicio 4.2: valida y cambia la contraseña del usuario autenticado.
     form = CambiarPasswordForm()
+    if form.validate_on_submit():
+        if not current_user.check_password(form.password_actual.data):
+            flash("La contraseña actual no es correcta.", "error")
+        elif form.nueva_password.data == form.password_actual.data:
+            flash("La nueva contraseña debe ser diferente a la actual.", "error")
+        else:
+            current_user.set_password(form.nueva_password.data)
+            db.session.commit()
+            flash("Contraseña actualizada correctamente.", "exito")
+            return redirect(url_for("auth.perfil"))
 
     return render_template("perfil.html", form=form)
 
@@ -50,6 +74,8 @@ def perfil():
 @auth_bp.route("/logout")
 @login_required
 def logout():
+    # Ejercicio 4.3: evita que las reservas pasen al siguiente usuario.
+    session.pop("reservas", None)
     logout_user()
 
     flash("Has cerrado sesión correctamente.", "info")

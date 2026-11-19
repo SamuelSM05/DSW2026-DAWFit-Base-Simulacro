@@ -12,8 +12,10 @@
                 <strong style="font-size: 1.2em; margin-right: 15px;">🏋️ DAW-Fit</strong>
                 <a href="{{ url_for('public.mostrar_actividades') }}">Actividades</a>
 
-                <!-- TODO (Bloque 2): Mostrar el enlace '+ Nueva Actividad' SOLO si el usuario es monitor -->
-                <a href="{{ url_for('admin.crear_actividad') }}">+ Nueva Actividad</a>
+                {% if current_user.is_authenticated and current_user.es_monitor %}
+                    {# Ejercicio 2.1: enlace exclusivo para monitores. #}
+                    <a href="{{ url_for('admin.crear_actividad') }}">+ Nueva Actividad</a>
+                {% endif %}
 
                 {% if current_user.is_authenticated %}
                     <a href="{{ url_for('public.ver_reservas') }}">
